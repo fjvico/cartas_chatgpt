@@ -40,7 +40,7 @@ document.getElementById('contact-form').addEventListener('submit', function(e) {
     });
     
     // URL de tu Google Script - REEMPLAZA CON TU URL REAL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx-a9mB8aWzWvXzsZrhBXtc5jLq7wwW3o8ZBCZqergF7ifxHIduSCWciJYsr2jKsUw/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzq-HrMUdAPZoVpEUZE-3b7neEhBGjGxUpaYgN0zS2PZ9BfysKMNisz-gJED76Goko/exec';
     
     // Enviar datos al Google Script
     fetch(scriptURL, {
