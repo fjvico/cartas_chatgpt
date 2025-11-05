@@ -19,7 +19,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Form submission handler
+// Form submission handler - VERSIÓN CORREGIDA
 document.getElementById('contact-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -33,7 +33,7 @@ document.getElementById('contact-form').addEventListener('submit', function(e) {
     submitButton.textContent = 'Enviando...';
     submitButton.disabled = true;
     
-    // Convertir FormData a objeto JSON
+    // Convertir FormData a URL encoded (en lugar de JSON)
     const formObject = {};
     formData.forEach((value, key) => {
         formObject[key] = value;
@@ -42,36 +42,30 @@ document.getElementById('contact-form').addEventListener('submit', function(e) {
     // URL de tu Google Script
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzq-HrMUdAPZoVpEUZE-3b7neEhBGjGxUpaYgN0zS2PZ9BfysKMNisz-gJED76Goko/exec';
     
-    // Enviar datos al Google Script
+    // Crear datos en formato URL encoded
+    const urlEncodedData = new URLSearchParams();
+    for (const key in formObject) {
+        urlEncodedData.append(key, formObject[key]);
+    }
+    
+    // Enviar datos al Google Script - USANDO URL ENCODED
     fetch(scriptURL, {
         method: 'POST',
-        body: JSON.stringify(formObject),
+        body: urlEncodedData,
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        mode: 'no-cors' // Importante para evitar problemas CORS
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error de red: ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.result === 'success') {
-            // Mostrar mensaje de éxito
-            messageDiv.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
-            messageDiv.className = 'form-message success';
-            
-            // Resetear formulario
-            form.reset();
-        } else {
-            throw new Error(data.message || 'Error del servidor');
-        }
+    .then(() => {
+        // Con 'no-cors' no podemos leer la respuesta, pero asumimos éxito
+        messageDiv.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
+        messageDiv.className = 'form-message success';
+        form.reset();
     })
     .catch(error => {
         console.error('Error completo:', error);
-        // Mostrar mensaje de error específico
-        messageDiv.textContent = 'Hubo un error al enviar el mensaje: ' + error.message;
+        messageDiv.textContent = 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.';
         messageDiv.className = 'form-message error';
     })
     .finally(() => {
