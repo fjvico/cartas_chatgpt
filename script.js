@@ -80,7 +80,7 @@ document.getElementById('contact-form').addEventListener('submit', async functio
     logDebug('Datos del formulario: ' + JSON.stringify(formData));
     
     // COLOCA AQUÍ TU URL - URL DE EJEMPLO, DEBES CAMBIARLA
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzFtEOuzPw8RlYL0CXGU9nfN8WDIWyC6R4CmQPd0b3f1GtzpuT42V7FTcUl09QdmOk/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzbZZIQlGwaOjRWs0tYPSCazXIgdGrtnExTmVjvVqdpuTpxGk8DM8_uM8r2NU8K6lI/exec';
     
     logDebug('URL del script: ' + scriptURL);
     
