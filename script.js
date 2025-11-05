@@ -19,20 +19,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Form submission handler - VERSIÓN MEJORADA
+// Form submission handler
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const form = this;
     const messageDiv = document.getElementById('form-message');
     
-    // Mostrar estado de carga
     const submitButton = form.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Enviando...';
     submitButton.disabled = true;
     
-    // Obtener datos del formulario
     const formData = {
         name: form.querySelector('[name="name"]').value,
         email: form.querySelector('[name="email"]').value,
@@ -40,49 +38,29 @@ document.getElementById('contact-form').addEventListener('submit', async functio
         message: form.querySelector('[name="message"]').value
     };
     
-    console.log('Enviando datos:', formData);
+    console.log('Datos a enviar:', formData);
     
-    // URL de tu Google Script - ACTUALIZA ESTA URL CON LA NUEVA
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzFtEOuzPw8RlYL0CXGU9nfN8WDIWyC6R4CmQPd0b3f1GtzpuT42V7FTcUl09QdmOk/exec';
+    // COLOCA AQUÍ TU NUEVA URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwmIfzICLMmQgIbh691dvc50rPTN6q0gZIV_b1ucEAjmx00XQ3NBH63Py4rwHdUJRk/exec';
     
     try {
         const response = await fetch(scriptURL, {
             method: 'POST',
+            mode: 'no-cors', // Esto evita errores CORS pero no podrás leer la respuesta
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(formData)
         });
         
-        console.log('Respuesta recibida:', response);
-        
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Datos respuesta:', data);
-        
-        if (data.status === 'success') {
-            messageDiv.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
-            messageDiv.className = 'form-message success';
-            form.reset();
-        } else {
-            throw new Error(data.message || 'Error del servidor');
-        }
+        // Con mode: 'no-cors', asumimos éxito si no hay error
+        messageDiv.textContent = '¡Mensaje enviado! Te contactaremos pronto.';
+        messageDiv.className = 'form-message success';
+        form.reset();
         
     } catch (error) {
-        console.error('Error completo:', error);
-        
-        // Mensajes de error más específicos
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            messageDiv.textContent = 'Error de conexión. Verifica tu internet o intenta más tarde.';
-        } else if (error.message.includes('CORS')) {
-            messageDiv.textContent = 'Error de configuración del servidor.';
-        } else {
-            messageDiv.textContent = `Error: ${error.message}`;
-        }
-        
+        console.error('Error:', error);
+        messageDiv.textContent = 'Error al enviar. Por favor, intenta de nuevo.';
         messageDiv.className = 'form-message error';
     } finally {
         submitButton.textContent = originalText;
