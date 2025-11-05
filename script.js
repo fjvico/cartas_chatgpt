@@ -8,7 +8,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
-            // Calculate offset for fixed header
             const headerHeight = document.querySelector('header').offsetHeight;
             const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
             
@@ -20,7 +19,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Form submission handler
+// Form submission handler - CÓDIGO ACTUALIZADO
 document.getElementById('contact-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -28,47 +27,63 @@ document.getElementById('contact-form').addEventListener('submit', function(e) {
     const formData = new FormData(form);
     const messageDiv = document.getElementById('form-message');
     
-    // Show loading state
+    // Mostrar estado de carga
     const submitButton = form.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Enviando...';
     submitButton.disabled = true;
     
-    // Send form data to Google Apps Script
-    fetch('https://script.google.com/macros/s/AKfycbwF9JEJysVFy8ktHtpFdIMpwx8Ip-hOHFFTTXHfbfaSyVsg-pdkOZyk8DdD_ODZpd0/exec', {
+    // Convertir FormData a objeto JSON
+    const formObject = {};
+    formData.forEach((value, key) => {
+        formObject[key] = value;
+    });
+    
+    // URL de tu Google Script - REEMPLAZA CON TU URL REAL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx-a9mB8aWzWvXzsZrhBXtc5jLq7wwW3o8ZBCZqergF7ifxHIduSCWciJYsr2jKsUw/exec';
+    
+    // Enviar datos al Google Script
+    fetch(scriptURL, {
         method: 'POST',
-        body: formData
+        body: JSON.stringify(formObject),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('Error de red: ' + response.status);
         }
         return response.json();
     })
     .then(data => {
-        // Show success message
-        messageDiv.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
-        messageDiv.className = 'form-message success';
-        
-        // Reset form
-        form.reset();
+        if (data.result === 'success') {
+            // Mostrar mensaje de éxito
+            messageDiv.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
+            messageDiv.className = 'form-message success';
+            
+            // Resetear formulario
+            form.reset();
+        } else {
+            throw new Error(data.message || 'Error del servidor');
+        }
     })
     .catch(error => {
-        console.error('Error:', error);
-        // Show error message
-        messageDiv.textContent = 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.';
+        console.error('Error completo:', error);
+        // Mostrar mensaje de error específico
+        messageDiv.textContent = 'Hubo un error al enviar el mensaje: ' + error.message;
         messageDiv.className = 'form-message error';
     })
     .finally(() => {
-        // Restore button state
+        // Restaurar estado del botón
         submitButton.textContent = originalText;
         submitButton.disabled = false;
         
-        // Hide message after 5 seconds
+        // Ocultar mensaje después de 8 segundos
         setTimeout(() => {
             messageDiv.textContent = '';
             messageDiv.className = 'form-message';
-        }, 5000);
+        }, 8000);
     });
 });
 
