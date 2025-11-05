@@ -42,7 +42,7 @@ document.getElementById('contact-form').addEventListener('submit', function(e) {
     console.log('Datos a enviar:', formObject);
     
     // URL de tu Google Script
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzq-HrMUdAPZoVpEUZE-3b7neEhBGjGxUpaYgN0zS2PZ9BfysKMNisz-gJED76Goko/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzFtEOuzPw8RlYL0CXGU9nfN8WDIWyC6R4CmQPd0b3f1GtzpuT42V7FTcUl09QdmOk/exec';
     
     // Enviar datos al Google Script
     fetch(scriptURL, {
