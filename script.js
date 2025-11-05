@@ -88,18 +88,24 @@ document.getElementById('contact-form').addEventListener('submit', async functio
     logDebug('--- MÉTODO 1: POST con no-cors ---');
     
     try {
-        logDebug('Enviando petición POST...');
+        logDebug('Enviando petición POST con FormData...');
+        
+        // Crear FormData en lugar de JSON
+        const formDataObj = new FormData();
+        formDataObj.append('name', formData.name);
+        formDataObj.append('email', formData.email);
+        formDataObj.append('subject', formData.subject);
+        formDataObj.append('message', formData.message);
+        
+        logDebug('FormData creado con ' + Array.from(formDataObj.keys()).length + ' campos');
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         
         const response = await fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
+            body: formDataObj,
             signal: controller.signal
         });
         
@@ -109,8 +115,10 @@ document.getElementById('contact-form').addEventListener('submit', async functio
         logDebug('Type: ' + response.type);
         logDebug('Status: ' + response.status);
         
-        // Con no-cors, si llegamos aquí sin error, asumimos éxito
-        messageDiv.textContent = '¡Mensaje enviado! Verifica tu Google Sheet.';
+        // Esperar 2 segundos para que se procese
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        messageDiv.textContent = '¡Mensaje enviado! Verifica tu Google Sheet en unos segundos.';
         messageDiv.className = 'form-message success';
         logDebug('✓ ÉXITO: Petición completada', 'success');
         form.reset();
